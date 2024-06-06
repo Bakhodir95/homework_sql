@@ -1,4 +1,3 @@
-import 'package:homework_sql/models/contacts_model.dart';
 import 'package:sqflite/sqflite.dart';
 
 class ContactsController {
@@ -49,12 +48,14 @@ class ContactsController {
   Future<void> editContacts(
     String name,
     String number,
+    int id,
   ) async {
-    await _database!.update("contacts", {"name": name, "phone_number": number},
-        where: "id=?", whereArgs: [2]);
+    await _database!.update(
+        "contacts", {"name": name, "phone_number": number, "id": id},
+        where: "id=?", whereArgs: [id]);
   }
 
-  Future<void> deleteContacts(String id) async {
-    await _database!.delete("contacts", where: "id=?", whereArgs: [2]);
+  Future<void> deleteContacts(int id) async {
+    await _database!.delete("contacts", where: "id=?", whereArgs: [id]);
   }
 }

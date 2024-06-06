@@ -25,18 +25,13 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {});
   }
 
-  Future<void> deleteContact(String contactId) async {
+  Future<void> deleteContact(int contactId) async {
     await contactDatabase.deleteContacts(contactId);
+    setState(() {});
   }
 
-  Future<void> editContact(
-    String contactId,
-    String newName,
-  ) async {
-    await contactDatabase.editContacts(
-      contactId,
-      newName,
-    );
+  Future<void> editContact(String contactId, String newName, int id) async {
+    await contactDatabase.editContacts(contactId, newName, id);
   }
 
   @override
@@ -94,13 +89,11 @@ class _HomeScreenState extends State<HomeScreen> {
                       });
                   if (response != null) {
                     //! Add new contacts
-                    print(response);
                     nameController.clear();
                     phoneController.clear();
 
                     await contactDatabase.addContacts(
                         response['name'], response['phone_number']);
-                    print("object");
                     setState(() {});
                   }
                 },
@@ -124,6 +117,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: Text("No contacts yet!"),
                     )
                   : ListView.builder(
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
                       itemCount: contacts.length,
                       itemBuilder: (ctx, index) {
                         return ListTile(
@@ -164,10 +159,16 @@ class _HomeScreenState extends State<HomeScreen> {
                                     ),
                                     TextButton(
                                       onPressed: () {
+                                        // ! Edit contacts
+                                        print(nameController.text);
+                                        print(phoneController.text);
+                                        print(contacts[index]['id']);
                                         editContact(
-                                          contacts[index]['id'],
                                           nameController.text,
+                                          phoneController.text,
+                                          contacts[index]['id'],
                                         );
+                                        setState(() {});
                                         Navigator.pop(context);
                                       },
                                       child: const Text("Edit"),
@@ -176,12 +177,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                 );
                               },
                             );
-
-                            if (response != null) {
-                              //! Contact editing
-                              await editContact(
-                                  contacts[index]['id'], response);
-                            }
                           },
                           title: Text(
                             "${index + 1}.${contacts[index]['name']}'s phone number is${contacts[index]["phone_number"]}",
